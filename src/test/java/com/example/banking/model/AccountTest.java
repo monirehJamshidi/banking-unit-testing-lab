@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AccountTest {
 
@@ -19,5 +20,54 @@ public class AccountTest {
 
         // TODO: Assert the balance
         assertEquals(new BigDecimal("100.00"), account.getBalance());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBalanceIsNegative() {
+
+        // TODO: Use assertThrows()
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    new Account("Monireh", new BigDecimal("-10.00"));
+                }
+        );
+
+        assertEquals(
+                "Balance cannot be null or negative",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenOwnerIsBlank() {
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    new Account(" ", new BigDecimal("100.00"));
+                }
+        );
+
+        assertEquals(
+                "Owner cannot be null or blank",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenOwnerIsNull() {
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    new Account(null, new BigDecimal("100.00"));
+                }
+        );
+
+        assertEquals(
+                "Owner cannot be null or blank",
+                exception.getMessage()
+        );
     }
 }
