@@ -5,13 +5,13 @@ import com.example.banking.repository.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,5 +80,101 @@ public class AccountServiceTest {
 
         assertNull(actualAccount);
 
+    }
+
+    @Test
+    void shouldSaveAccountOnlyOnce() {
+        Account account = new Account(
+                "Monireh",
+                new BigDecimal("100.00")
+        );
+
+        when(accountRepository.save(account)).thenReturn(account);
+
+        Account actualAccount = accountService.createAccount(account);
+
+        verify(accountRepository, times(1)).save(any(Account.class));
+
+        assertEquals(account, actualAccount);
+    }
+
+    @Test
+    void shouldNotCallSaveWhenGettingAccount() {
+        Long accountId = 1L;
+
+        when(accountRepository.findById(accountId)).thenReturn(null);
+
+        Account actualAccount = accountService.getAccount(accountId);
+
+        verify(accountRepository, never()).save(any(Account.class));
+
+        assertNull(actualAccount);
+    }
+
+    @Test
+    void shouldOnlyCallFindByIdWhenGettingAccount() {
+
+        Long accountId = 1L;
+
+        Account account = new Account(
+                "Monireh",
+                new BigDecimal("100.00")
+        );
+
+        when(accountRepository.findById(accountId))
+                .thenReturn(account);
+
+        Account actualAccount = accountService.getAccount(accountId);
+
+        assertEquals(account, actualAccount);
+
+        verify(accountRepository).findById(accountId);
+
+        verifyNoMoreInteractions(accountRepository);
+    }
+
+    @Test
+    void shouldCaptureAccountPassedToSave() {
+
+        Account account = new Account(
+                "Monireh",
+                new BigDecimal("500.00")
+        );
+
+        when(accountRepository.save(any(Account.class)))
+                .thenReturn(account);
+
+        accountService.createAccount(account);
+
+        ArgumentCaptor<Account> captor =
+                ArgumentCaptor.forClass(Account.class);
+
+        verify(accountRepository).save(captor.capture());
+
+        Account capturedAccount = captor.getValue();
+
+        assertEquals("Monireh", capturedAccount.getOwner());
+        assertEquals(
+                new BigDecimal("500.00"),
+                capturedAccount.getBalance()
+        );
+    }
+
+    @Test
+    void shouldPropagateExceptionWhenRepositoryFails() {
+
+        Long accountId = 1L;
+
+        when(accountRepository.findById(accountId))
+                .thenThrow(new RuntimeException("Database unavailable"));
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> accountService.getAccount(accountId)
+        );
+
+        assertEquals("Database unavailable", exception.getMessage());
+
+        verify(accountRepository).findById(accountId);
     }
 }
