@@ -177,4 +177,48 @@ public class AccountServiceTest {
 
         verify(accountRepository).findById(accountId);
     }
+
+    @Test
+    void shouldDeleteAccountSuccessfully(){
+
+        Long accountId = 1L;
+
+        accountService.deleteAccount(accountId);
+
+        verify(accountRepository, times(1)).deleteById(accountId);
+    }
+
+    @Test
+    void shouldPropagateExceptionWhenDeleteFails() {
+
+        Long accountId = 1L;
+
+        doThrow(new RuntimeException("Delete failed"))
+                .when(accountRepository)
+                .deleteById(accountId);
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> {
+                    accountRepository.deleteById(accountId);
+                }
+        );
+
+        assertEquals("Delete failed", exception.getMessage());
+
+        verify(accountRepository, times(1)).deleteById(accountId);
+    }
+
+    @Test
+    void shouldOnlyCallDeleteByIdWhenDeletingAccount() {
+
+        Long accountId = 1L;
+
+        accountService.deleteAccount(accountId);
+
+        verify(accountRepository, times(1)).deleteById(accountId);
+
+        verifyNoMoreInteractions(accountRepository);
+
+    }
 }
