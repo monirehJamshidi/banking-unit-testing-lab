@@ -5,16 +5,28 @@ import java.math.BigDecimal;
 public class Account {
 
     private Long id;
-    private String owner;
-    private BigDecimal balance;
+    private final String owner;
+    private final BigDecimal balance;
 
     public Account(String owner, BigDecimal balance){
 
-        if (owner == null || owner.isBlank())
-            throw new  IllegalArgumentException("Owner cannot be null or blank");
+        if (owner == null || owner.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Owner cannot be null or blank"
+            );
+        }
 
-        if (balance == null || balance.signum() < 0)
-            throw new  IllegalArgumentException("Balance cannot be null or negative");
+        if (balance == null) {
+            throw new IllegalArgumentException(
+                    "Balance cannot be null"
+            );
+        }
+
+        if (balance.signum() < 0) {
+            throw new IllegalArgumentException(
+                    "Balance cannot be negative"
+            );
+        }
 
         this.owner = owner;
         this.balance = balance;

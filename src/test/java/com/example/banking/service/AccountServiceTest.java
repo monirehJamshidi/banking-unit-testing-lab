@@ -200,7 +200,7 @@ public class AccountServiceTest {
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> {
-                    accountRepository.deleteById(accountId);
+                    accountService.deleteAccount(accountId);
                 }
         );
 

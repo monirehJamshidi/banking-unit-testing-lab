@@ -25,16 +25,13 @@ public class AccountTest {
     @Test
     void shouldThrowExceptionWhenBalanceIsNegative() {
 
-        // TODO: Use assertThrows()
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> {
-                    new Account("Monireh", new BigDecimal("-10.00"));
-                }
+                () -> new Account("Monireh", new BigDecimal("-10.00"))
         );
 
         assertEquals(
-                "Balance cannot be null or negative",
+                "Balance cannot be negative",
                 exception.getMessage()
         );
     }
@@ -44,9 +41,7 @@ public class AccountTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> {
-                    new Account(" ", new BigDecimal("100.00"));
-                }
+                () -> new Account(" ", new BigDecimal("100.00"))
         );
 
         assertEquals(
@@ -60,14 +55,32 @@ public class AccountTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> {
-                    new Account(null, new BigDecimal("100.00"));
-                }
+                () -> new Account(null, new BigDecimal("100.00"))
         );
 
         assertEquals(
                 "Owner cannot be null or blank",
                 exception.getMessage()
         );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBalanceIsNull() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Account("Monireh", null)
+        );
+
+        assertEquals(
+                "Balance cannot be null",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldCreateAccountWithZeroBalance() {
+        Account account = new Account("Monireh", new BigDecimal("0.00"));
+
+        assertEquals(new BigDecimal("0.00"), account.getBalance());
     }
 }

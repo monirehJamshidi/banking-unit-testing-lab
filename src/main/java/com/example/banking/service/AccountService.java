@@ -3,12 +3,14 @@ package com.example.banking.service;
 import com.example.banking.model.Account;
 import com.example.banking.repository.AccountRepository;
 
+import java.util.Objects;
+
 public class AccountService {
 
     private final AccountRepository accountRepository;
 
-    public AccountService(AccountRepository repository){
-        this.accountRepository = repository;
+    public AccountService(AccountRepository accountRepository){
+        this.accountRepository = Objects.requireNonNull(accountRepository);
     }
 
     public Account createAccount(Account account) {
